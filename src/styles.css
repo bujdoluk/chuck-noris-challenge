@@ -56,7 +56,14 @@
   text-decoration: underline;
 }
 
-button {
+.joke__add {
+  min-width: 100px;
+  width: 100px;
+  min-height: 20px;
+  height: 20px;
+}
+
+.button {
   cursor: pointer;
   min-width: 200px;
   width: 200px;

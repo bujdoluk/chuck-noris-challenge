@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import config from "../config/config.json";
 import { Joke } from "../types";
 import { CONSTANTS } from "../utils/constants.ts";
@@ -7,12 +8,13 @@ import JokeCard from "./JokeCard.tsx";
 
 export default function Home() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [joke, setJoke] = useState<Joke>();
   const [jokes, setJokes] = useState<Array<Joke>>([]);
   const [loadingJoke, setLoading] = useState<boolean>(false);
   const [loadingNewJoke, setNewLoading] = useState<boolean>(false);
-  const [favouriteJokes, setFavouriteJokes] = useState<Array<Joke>>([]);
+  const [_favouriteJokes, setFavouriteJokes] = useState<Array<Joke>>([]);
 
   const timeoutRef = useRef<number | null>(null);
   const intervalRef = useRef<number | null>(null);
@@ -64,7 +66,15 @@ export default function Home() {
     }, CONSTANTS.REFRESH_INTERVAL);
   };
 
-  const onAddToFavourites = (): void => {};
+  const onAddToFavourites = (favouriteJoke: Joke): void => {
+    setFavouriteJokes((previousJokes: Array<Joke>) => {
+      if (previousJokes.find((joke) => joke.id === favouriteJoke.id))
+        return previousJokes;
+      const savedFavourites = [favouriteJoke, ...previousJokes];
+      localStorage.setItem("favouriteJokes", JSON.stringify(savedFavourites));
+      return savedFavourites;
+    });
+  };
 
   useEffect(() => {
     const onKeyboardEvent = (event: KeyboardEvent): void => {
@@ -82,17 +92,18 @@ export default function Home() {
 
   return (
     <div className="home">
-      <button onClick={onFetchJoke} disabled={loadingJoke}>
+      <button className="button" onClick={onFetchJoke} disabled={loadingJoke}>
         {loadingJoke ? "Loading..." : "Get One Joke"}
       </button>
 
       {joke && (
         <div className="grid">
-          <JokeCard joke={joke} />
+          <JokeCard joke={joke} onAddToFavourites={onAddToFavourites} />
         </div>
       )}
 
       <button
+        className="button"
         onClick={onFetchNewJoke}
         disabled={loadingNewJoke && !intervalRef.current}
       >
@@ -102,12 +113,21 @@ export default function Home() {
       {jokes.length > 0 && (
         <div className="grid">
           {jokes.map((joke: Joke) => (
-            <JokeCard key={joke.id} joke={joke} />
+            <JokeCard
+              key={joke.id}
+              joke={joke}
+              onAddToFavourites={onAddToFavourites}
+            />
           ))}
         </div>
       )}
 
-      <button onClick={onAddToFavourites}>{t("addToFavourites")}</button>
+      <button
+        className="button"
+        onClick={async (): Promise<void> => await navigate("/favourites")}
+      >
+        {t("goToFavourites")}
+      </button>
     </div>
   );
 }

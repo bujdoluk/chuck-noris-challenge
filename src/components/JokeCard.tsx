@@ -4,9 +4,10 @@ import { useTranslation } from "react-i18next";
 
 interface Props {
   joke: Joke;
+  onAddToFavourites?: (joke: Joke) => void;
 }
 
-const JokeCard: React.FC<Props> = ({ joke }) => {
+const JokeCard: React.FC<Props> = ({ joke, onAddToFavourites }) => {
   const { t } = useTranslation();
 
   return (
@@ -25,6 +26,12 @@ const JokeCard: React.FC<Props> = ({ joke }) => {
       <div className="joke__link">
         <a href={joke.url}>{t("visitJoke")}</a>
       </div>
+
+      {onAddToFavourites && (
+        <button onClick={(): void => onAddToFavourites(joke)}>
+          {t("addToFavourites")}
+        </button>
+      )}
     </div>
   );
 };
