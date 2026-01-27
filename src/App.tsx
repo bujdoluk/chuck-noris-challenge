@@ -1,7 +1,7 @@
 import React from "react";
-import Home from "./Home.tsx";
+import Home from "./components/Home.tsx";
 import "./styles.css";
-import Favourites from "./Favourites.tsx";
+import Favourites from "./components/Favourites.tsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 export default function App() {

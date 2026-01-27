@@ -1,0 +1,32 @@
+import React from "react";
+import { Joke } from "../types";
+import { useTranslation } from "react-i18next";
+
+interface Props {
+  joke: Joke;
+}
+
+const JokeCard: React.FC<Props> = ({ joke }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="joke">
+      <div>
+        <span className="joke__id">{t("id")}: </span>
+        {joke.id}
+      </div>
+
+      <div className="joke__url">
+        <img src={joke.icon_url} alt={t("chuckNorisJoke") || ""} />
+      </div>
+
+      <div className="joke__value">{joke.value}</div>
+
+      <div className="joke__link">
+        <a href={joke.url}>{t("visitJoke")}</a>
+      </div>
+    </div>
+  );
+};
+
+export default JokeCard;
