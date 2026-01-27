@@ -2,3 +2,49 @@
   font-family: "Courier New", Courier, monospace;
   text-align: center;
 }
+
+.homePage {
+  background-color: #c4c4c4;
+  width: 100vw;
+  height: 100vh;
+  padding: 49px 39px;
+}
+
+.favouritesPage {
+  background-color: #c4c4c4;
+  width: 100vw;
+  height: 100vh;
+  padding: 49px 39px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px 16px;
+}
+
+.grid div {
+  background-color: #ffffff;
+  padding: 20px;
+  text-align: center;
+  min-width: 268px;
+  min-height: 49px;
+}
+
+button {
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 14px 16px;
+  }
+}
