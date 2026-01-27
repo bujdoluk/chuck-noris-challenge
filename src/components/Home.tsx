@@ -4,7 +4,7 @@ import config from "../config/config.json";
 import { Joke } from "../types";
 import { CONSTANTS } from "../utils/constants.ts";
 import { useTranslation } from "react-i18next";
-import JokeCard from "./JokeCard.tsx";
+import JokeItem from "./JokeItem.tsx";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -14,7 +14,7 @@ export default function Home() {
   const [jokes, setJokes] = useState<Array<Joke>>([]);
   const [loadingJoke, setLoading] = useState<boolean>(false);
   const [loadingNewJoke, setNewLoading] = useState<boolean>(false);
-  const [_favouriteJokes, setFavouriteJokes] = useState<Array<Joke>>([]);
+  const [favouriteJokes, setFavouriteJokes] = useState<Array<Joke>>([]);
 
   const timeoutRef = useRef<number | null>(null);
   const intervalRef = useRef<number | null>(null);
@@ -66,13 +66,23 @@ export default function Home() {
     }, CONSTANTS.REFRESH_INTERVAL);
   };
 
-  const onAddToFavourites = (favouriteJoke: Joke): void => {
+  const addToFavourites = (favouriteJoke: Joke): void => {
     setFavouriteJokes((previousJokes: Array<Joke>) => {
       if (previousJokes.find((joke) => joke.id === favouriteJoke.id))
         return previousJokes;
       const savedFavourites = [favouriteJoke, ...previousJokes];
       localStorage.setItem("favouriteJokes", JSON.stringify(savedFavourites));
       return savedFavourites;
+    });
+  };
+
+  const removeFromFavourites = (favouriteJoke: Joke): void => {
+    setFavouriteJokes((previousJokes: Array<Joke>) => {
+      const updated = previousJokes.filter(
+        (joke: Joke) => joke.id !== favouriteJoke.id
+      );
+      localStorage.setItem("favouriteJokes", JSON.stringify(updated));
+      return updated;
     });
   };
 
@@ -98,7 +108,12 @@ export default function Home() {
 
       {joke && (
         <div className="grid">
-          <JokeCard joke={joke} onAddToFavourites={onAddToFavourites} />
+          <JokeItem
+            joke={joke}
+            favouriteJokes={favouriteJokes}
+            onAddToFavourites={addToFavourites}
+            onRemoveFromFavourites={removeFromFavourites}
+          />
         </div>
       )}
 
@@ -113,10 +128,12 @@ export default function Home() {
       {jokes.length > 0 && (
         <div className="grid">
           {jokes.map((joke: Joke) => (
-            <JokeCard
+            <JokeItem
               key={joke.id}
               joke={joke}
-              onAddToFavourites={onAddToFavourites}
+              favouriteJokes={favouriteJokes}
+              onAddToFavourites={addToFavourites}
+              onRemoveFromFavourites={removeFromFavourites}
             />
           ))}
         </div>

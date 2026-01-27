@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import JokeCard from "./JokeCard.tsx";
+import JokeItem from "./JokeItem.tsx";
 import { Joke } from "../types";
 
 export default function Favourites() {
@@ -8,7 +8,10 @@ export default function Favourites() {
 
   const [favouritesJokes, setFavourites] = useState<Array<Joke>>([]);
 
-  const clearAll = (): void => setFavourites([]);
+  const clearAll = (): void => {
+    setFavourites([]);
+    localStorage.removeItem("favouriteJokes");
+  };
 
   useEffect(() => {
     const savedFavourites = localStorage.getItem("favouriteJokes");
@@ -21,15 +24,17 @@ export default function Favourites() {
         {t("clearAll")}
       </button>
 
-      <div>
-        {favouritesJokes.length > 0 && (
-          <div className="grid">
-            {favouritesJokes.map((favouriteJoke: Joke) => (
-              <JokeCard key={favouriteJoke.id} joke={favouriteJoke} />
-            ))}
-          </div>
-        )}
-      </div>
+      {favouritesJokes.length > 0 ? (
+        <ul className="grid">
+          {favouritesJokes.map((favouriteJoke: Joke) => (
+            <li key={favouriteJoke.id} className="favourites__item">
+              <JokeItem joke={favouriteJoke} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>{t("emptyList")}</p>
+      )}
     </div>
   );
 }
