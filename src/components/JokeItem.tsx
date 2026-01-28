@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Joke } from "../types";
 import { useTranslation } from "react-i18next";
 
@@ -10,7 +10,7 @@ interface Props {
   onDeleteFromFavourites?: (joke: Joke) => void;
 }
 
-const JokeCard: React.FC<Props> = ({
+const JokeItem: React.FC<Props> = ({
   joke,
   favouriteJokes = [],
   onAddToFavourites,
@@ -20,7 +20,7 @@ const JokeCard: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const isAdded = favouriteJokes.find(
-    (addedJoke: Joke) => addedJoke.id === joke.id
+    (favouriteJoke: Joke) => favouriteJoke.id === joke.id
   );
 
   const onToggleFavorite = (): void => {
@@ -37,20 +37,17 @@ const JokeCard: React.FC<Props> = ({
 
   return (
     <div className="joke">
-      <div>
-        <span className="joke__id">{t("id")}</span>
-        {joke.id}
-      </div>
-
-      <div className="joke__url">
+      <div className="joke__icon">
         <img src={joke.icon_url} alt={t("chuckNorisJoke") || ""} />
       </div>
 
-      <div className="joke__value">{joke.value}</div>
-
-      <div className="joke__link">
-        <a href={joke.url}>{t("visitJoke")}</a>
+      <div>
+        <a href={joke.url} target="_blank" className="joke__link">
+          {t("visitWebsite")}
+        </a>
       </div>
+
+      <div className="joke__value">{joke.value}</div>
 
       {onAddToFavourites && (
         <button className="joke__add" onClick={(): void => onToggleFavorite()}>
@@ -67,4 +64,4 @@ const JokeCard: React.FC<Props> = ({
   );
 };
 
-export default JokeCard;
+export default JokeItem;
