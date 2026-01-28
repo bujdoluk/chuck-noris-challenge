@@ -48,7 +48,7 @@ export default function Home() {
     }, CONSTANTS.DEBOUNCE);
   };
 
-  const onFetchNewJoke = (): void => {
+  const onFetchNewJoke = async (): Promise<void> => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -61,28 +61,47 @@ export default function Home() {
     intervalRef.current = window.setInterval(async (): Promise<void> => {
       const newJoke = await fetchJoke();
       if (newJoke) {
-        setJokes((previousJoke: Array<Joke>) => [newJoke, ...previousJoke]);
+        setJokes((previousJokes: Array<Joke>) => [...previousJokes, newJoke]);
       }
     }, CONSTANTS.REFRESH_INTERVAL);
+
+    const firstJoke = await fetchJoke();
+    if (firstJoke) {
+      setJokes((previousJokes: Array<Joke>) => [...previousJokes, firstJoke]);
+    }
   };
 
   const addToFavourites = (favouriteJoke: Joke): void => {
     setFavouriteJokes((previousJokes: Array<Joke>) => {
-      if (previousJokes.find((joke) => joke.id === favouriteJoke.id))
-        return previousJokes;
-      const savedFavourites = [favouriteJoke, ...previousJokes];
-      localStorage.setItem("favouriteJokes", JSON.stringify(savedFavourites));
-      return savedFavourites;
+      const favouriteJokes = localStorage.getItem("favouriteJokes");
+      const savedFavourites: Array<Joke> = favouriteJokes
+        ? JSON.parse(favouriteJokes)
+        : previousJokes;
+
+      if (savedFavourites.find((joke: Joke) => joke.id === favouriteJoke.id))
+        return savedFavourites;
+
+      const maxJokes = [...savedFavourites, favouriteJoke].slice(
+        -CONSTANTS.MAX_FAVOURITES_JOKES
+      );
+      localStorage.setItem("favouriteJokes", JSON.stringify(maxJokes));
+
+      return maxJokes;
     });
   };
 
   const removeFromFavourites = (favouriteJoke: Joke): void => {
     setFavouriteJokes((previousJokes: Array<Joke>) => {
-      const updated = previousJokes.filter(
-        (joke: Joke) => joke.id !== favouriteJoke.id
+      const favouriteJokes = localStorage.getItem("favouriteJokes");
+      const savedFavourites: Array<Joke> = favouriteJokes
+        ? JSON.parse(favouriteJokes)
+        : previousJokes;
+
+      const filteredJokes = savedFavourites.filter(
+        (joke) => joke.id !== favouriteJoke.id
       );
-      localStorage.setItem("favouriteJokes", JSON.stringify(updated));
-      return updated;
+      localStorage.setItem("favouriteJokes", JSON.stringify(filteredJokes));
+      return filteredJokes;
     });
   };
 

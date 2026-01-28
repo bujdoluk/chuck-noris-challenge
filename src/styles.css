@@ -16,7 +16,7 @@
 .favourites {
   background-color: #c4c4c4;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   padding: 49px 39px;
 }
 
@@ -57,10 +57,11 @@
 }
 
 .joke__add {
-  min-width: 100px;
-  width: 100px;
-  min-height: 20px;
-  height: 20px;
+  cursor: pointer;
+  min-width: 170px;
+  width: 170px;
+  min-height: 30px;
+  height: 30px;
 }
 
 .button {
@@ -78,7 +79,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 598px) {
   .grid {
     grid-template-columns: 1fr;
     gap: 14px 16px;

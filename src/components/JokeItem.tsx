@@ -7,6 +7,7 @@ interface Props {
   favouriteJokes?: Array<Joke>;
   onAddToFavourites?: (joke: Joke) => void;
   onRemoveFromFavourites?: (joke: Joke) => void;
+  onDeleteFromFavourites?: (joke: Joke) => void;
 }
 
 const JokeCard: React.FC<Props> = ({
@@ -14,6 +15,7 @@ const JokeCard: React.FC<Props> = ({
   favouriteJokes = [],
   onAddToFavourites,
   onRemoveFromFavourites,
+  onDeleteFromFavourites,
 }) => {
   const { t } = useTranslation();
 
@@ -21,12 +23,16 @@ const JokeCard: React.FC<Props> = ({
     (addedJoke: Joke) => addedJoke.id === joke.id
   );
 
-  const onClick = (): void => {
+  const onToggleFavorite = (): void => {
     if (isAdded) {
       onRemoveFromFavourites?.(joke);
     } else {
       onAddToFavourites?.(joke);
     }
+  };
+
+  const onDeleteClick = (): void => {
+    onDeleteFromFavourites?.(joke);
   };
 
   return (
@@ -47,8 +53,14 @@ const JokeCard: React.FC<Props> = ({
       </div>
 
       {onAddToFavourites && (
-        <button onClick={(): void => onClick()}>
+        <button className="joke__add" onClick={(): void => onToggleFavorite()}>
           {isAdded ? t("removeFromFavourites") : t("addToFavourites")}
+        </button>
+      )}
+
+      {onDeleteFromFavourites && (
+        <button className="joke__add" onClick={(): void => onDeleteClick()}>
+          {t("deleteFromFavourites")}
         </button>
       )}
     </div>

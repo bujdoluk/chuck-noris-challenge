@@ -2,21 +2,46 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import JokeItem from "./JokeItem.tsx";
 import { Joke } from "../types";
+import { CONSTANTS } from "../utils/constants.ts";
 
 export default function Favourites() {
   const { t } = useTranslation();
 
-  const [favouritesJokes, setFavourites] = useState<Array<Joke>>([]);
+  const [favouritesJokes, setFavouriteJokes] = useState<Array<Joke>>([]);
 
   const clearAll = (): void => {
-    setFavourites([]);
+    setFavouriteJokes([]);
     localStorage.removeItem("favouriteJokes");
   };
 
-  useEffect(() => {
-    const savedFavourites = localStorage.getItem("favouriteJokes");
-    if (savedFavourites) setFavourites(JSON.parse(savedFavourites));
+  const maxFavouritesJokes = (jokes: Array<Joke>): Array<Joke> => {
+    if (jokes.length <= CONSTANTS.MAX_FAVOURITES_JOKES) return jokes;
+    return jokes.slice(jokes.length - CONSTANTS.MAX_FAVOURITES_JOKES);
+  };
+
+  useEffect((): void => {
+    const favouriteJokes = localStorage.getItem("favouriteJokes");
+    if (!favouriteJokes) return;
+
+    const parsedJokes: Array<Joke> = JSON.parse(favouriteJokes);
+    const maxJokes = maxFavouritesJokes(parsedJokes);
+
+    setFavouriteJokes(maxJokes);
+
+    if (maxJokes.length !== parsedJokes.length) {
+      localStorage.setItem("favouriteJokes", JSON.stringify(maxJokes));
+    }
   }, []);
+
+  const deleteFromFavourites = (favouriteJoke: Joke): void => {
+    setFavouriteJokes((previousJokes: Array<Joke>) => {
+      const updated = previousJokes.filter(
+        (joke: Joke) => joke.id !== favouriteJoke.id
+      );
+      localStorage.setItem("favouriteJokes", JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   return (
     <div className="favourites">
@@ -24,17 +49,19 @@ export default function Favourites() {
         {t("clearAll")}
       </button>
 
-      {favouritesJokes.length > 0 ? (
-        <ul className="grid">
-          {favouritesJokes.map((favouriteJoke: Joke) => (
-            <li key={favouriteJoke.id} className="favourites__item">
-              <JokeItem joke={favouriteJoke} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>{t("emptyList")}</p>
-      )}
+      <div>
+        {favouritesJokes.length > 0 && (
+          <div className="grid">
+            {favouritesJokes.map((favouriteJoke: Joke) => (
+              <JokeItem
+                key={favouriteJoke.id}
+                joke={favouriteJoke}
+                onDeleteFromFavourites={deleteFromFavourites}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

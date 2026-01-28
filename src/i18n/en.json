@@ -3,6 +3,7 @@
     "chuckNorisJoke": "Chuck Noris Joke",
     "clearAll": "Clear all",
     "emptyList":"No favourite joke added yet :(",
+    "deleteFromFavourites": "Delete From Favourites",
     "getJoke": "Get Joke",
     "getJokeEveryTreeSeconds": "Get Joke Every 3 Seconds",
     "goToFavourites": "Go To Favourites",
