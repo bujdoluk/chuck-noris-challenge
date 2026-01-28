@@ -14,7 +14,7 @@ export default function Home() {
   const [jokes, setJokes] = useState<Array<Joke>>([]);
   const [loadingJoke, setLoading] = useState<boolean>(false);
   const [loadingNewJoke, setNewLoading] = useState<boolean>(false);
-  const [favouriteJokes, setFavouriteJokes] = useState<Array<Joke>>([]);
+  const [favoriteJokes, setFavoriteJokes] = useState<Array<Joke>>([]);
 
   const timeoutRef = useRef<number | null>(null);
   const intervalRef = useRef<number | null>(null);
@@ -71,36 +71,36 @@ export default function Home() {
     }
   };
 
-  const addToFavourites = (favouriteJoke: Joke): void => {
-    setFavouriteJokes((previousJokes: Array<Joke>) => {
-      const favouriteJokes = localStorage.getItem("favouriteJokes");
-      const savedFavourites: Array<Joke> = favouriteJokes
-        ? JSON.parse(favouriteJokes)
+  const addToFavorites = (favorite: Joke): void => {
+    setFavoriteJokes((previousJokes: Array<Joke>) => {
+      const favorites = localStorage.getItem("favoriteJokes");
+      const savedFavorites: Array<Joke> = favorites
+        ? JSON.parse(favorites)
         : previousJokes;
 
-      if (savedFavourites.find((joke: Joke) => joke.id === favouriteJoke.id))
-        return savedFavourites;
+      if (savedFavorites.find((joke: Joke) => joke.id === favorite.id))
+        return savedFavorites;
 
-      const maxJokes = [...savedFavourites, favouriteJoke].slice(
-        -CONSTANTS.MAX_FAVOURITES_JOKES
+      const maxNumberOfJokes = [...savedFavorites, favorite].slice(
+        -CONSTANTS.MAX_FAVORITES_JOKES
       );
-      localStorage.setItem("favouriteJokes", JSON.stringify(maxJokes));
+      localStorage.setItem("favoriteJokes", JSON.stringify(maxNumberOfJokes));
 
-      return maxJokes;
+      return maxNumberOfJokes;
     });
   };
 
-  const removeFromFavourites = (favouriteJoke: Joke): void => {
-    setFavouriteJokes((previousJokes: Array<Joke>) => {
-      const favouriteJokes = localStorage.getItem("favouriteJokes");
-      const savedFavourites: Array<Joke> = favouriteJokes
-        ? JSON.parse(favouriteJokes)
+  const removeFromFavorites = (favorite: Joke): void => {
+    setFavoriteJokes((previousJokes: Array<Joke>) => {
+      const favorites = localStorage.getItem("favoriteJokes");
+      const savedFavorites: Array<Joke> = favorites
+        ? JSON.parse(favorites)
         : previousJokes;
 
-      const filteredJokes = savedFavourites.filter(
-        (joke) => joke.id !== favouriteJoke.id
+      const filteredJokes = savedFavorites.filter(
+        (joke) => joke.id !== favorite.id
       );
-      localStorage.setItem("favouriteJokes", JSON.stringify(filteredJokes));
+      localStorage.setItem("favoriteJokes", JSON.stringify(filteredJokes));
       return filteredJokes;
     });
   };
@@ -129,9 +129,9 @@ export default function Home() {
         <div className="grid">
           <JokeItem
             joke={joke}
-            favouriteJokes={favouriteJokes}
-            onAddToFavourites={addToFavourites}
-            onRemoveFromFavourites={removeFromFavourites}
+            favorites={favoriteJokes}
+            onAdd={addToFavorites}
+            onRemove={removeFromFavorites}
           />
         </div>
       )}
@@ -150,9 +150,9 @@ export default function Home() {
             <JokeItem
               key={joke.id}
               joke={joke}
-              favouriteJokes={favouriteJokes}
-              onAddToFavourites={addToFavourites}
-              onRemoveFromFavourites={removeFromFavourites}
+              favorites={favoriteJokes}
+              onAdd={addToFavorites}
+              onRemove={removeFromFavorites}
             />
           ))}
         </div>
@@ -160,9 +160,9 @@ export default function Home() {
 
       <button
         className="button"
-        onClick={async (): Promise<void> => await navigate("/favourites")}
+        onClick={async (): Promise<void> => await navigate("/favorites")}
       >
-        {t("goToFavourites")}
+        {t("goToFavorites")}
       </button>
     </div>
   );

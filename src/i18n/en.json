@@ -1,14 +1,14 @@
 {
-    "addToFavourites": "Add To Favourites",
+    "addToFavorites": "Add To Favorites",
     "chuckNorisJoke": "Chuck Noris Joke",
     "clearAll": "Clear all",
     "emptyList":"No favourite joke added yet :(",
-    "deleteFromFavourites": "Delete From Favourites",
+    "deleteFromFavorites": "Delete From Favorites",
     "getJoke": "Get Joke",
     "getJokeEveryTreeSeconds": "Get Joke Every 3 Seconds",
-    "goToFavourites": "Go To Favourites",
+    "goToFavorites": "Go To Favorites",
     "stop": "Stop",
     "loading": "Loading...",
-    "removeFromFavourites": "Remove From Favourites",
+    "removeFromFavorites": "Remove From Favorites",
     "visitWebsite": "Visit Website"
   }

@@ -4,35 +4,33 @@ import { useTranslation } from "react-i18next";
 
 interface Props {
   joke: Joke;
-  favouriteJokes?: Array<Joke>;
-  onAddToFavourites?: (joke: Joke) => void;
-  onRemoveFromFavourites?: (joke: Joke) => void;
-  onDeleteFromFavourites?: (joke: Joke) => void;
+  favorites?: Array<Joke>;
+  onAdd?: (joke: Joke) => void;
+  onRemove?: (joke: Joke) => void;
+  onDelete?: (joke: Joke) => void;
 }
 
 const JokeItem: React.FC<Props> = ({
   joke,
-  favouriteJokes = [],
-  onAddToFavourites,
-  onRemoveFromFavourites,
-  onDeleteFromFavourites,
+  favorites = [],
+  onAdd,
+  onRemove,
+  onDelete,
 }) => {
   const { t } = useTranslation();
 
-  const isAdded = favouriteJokes.find(
-    (favouriteJoke: Joke) => favouriteJoke.id === joke.id
-  );
+  const isAdded = favorites.find((favorite: Joke) => favorite.id === joke.id);
 
-  const onToggleFavorite = (): void => {
+  const toggleFavorite = (): void => {
     if (isAdded) {
-      onRemoveFromFavourites?.(joke);
+      onRemove?.(joke);
     } else {
-      onAddToFavourites?.(joke);
+      onAdd?.(joke);
     }
   };
 
-  const onDeleteClick = (): void => {
-    onDeleteFromFavourites?.(joke);
+  const deleteJoke = (): void => {
+    onDelete?.(joke);
   };
 
   return (
@@ -49,15 +47,15 @@ const JokeItem: React.FC<Props> = ({
 
       <div className="joke__value">{joke.value}</div>
 
-      {onAddToFavourites && (
-        <button className="joke__add" onClick={(): void => onToggleFavorite()}>
-          {isAdded ? t("removeFromFavourites") : t("addToFavourites")}
+      {onAdd && (
+        <button className="joke__add" onClick={toggleFavorite}>
+          {isAdded ? t("removeFromFavorites") : t("addToFavorites")}
         </button>
       )}
 
-      {onDeleteFromFavourites && (
-        <button className="joke__add" onClick={(): void => onDeleteClick()}>
-          {t("deleteFromFavourites")}
+      {onDelete && (
+        <button className="joke__add" onClick={deleteJoke}>
+          {t("deleteFromFavorites")}
         </button>
       )}
     </div>
