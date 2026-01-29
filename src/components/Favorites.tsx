@@ -7,14 +7,14 @@ import { CONSTANTS } from "../utils/constants.ts";
 export default function Favorites() {
   const { t } = useTranslation();
 
-  const [favoritesJokes, setFavoriteJokes] = useState<Array<Joke>>([]);
+  const [favorites, setFavorites] = useState<Array<Joke>>([]);
 
   const clearAll = (): void => {
-    setFavoriteJokes([]);
+    setFavorites([]);
     localStorage.removeItem("favoriteJokes");
   };
 
-  const maxFavoritesJokes = (jokes: Array<Joke>): Array<Joke> => {
+  const maxFavorites = (jokes: Array<Joke>): Array<Joke> => {
     if (jokes.length <= CONSTANTS.MAX_FAVORITES_JOKES) return jokes;
     return jokes.slice(jokes.length - CONSTANTS.MAX_FAVORITES_JOKES);
   };
@@ -24,9 +24,9 @@ export default function Favorites() {
     if (!favorites) return;
 
     const parsedJokes: Array<Joke> = JSON.parse(favorites);
-    const maxNumberOfJokes = maxFavoritesJokes(parsedJokes);
+    const maxNumberOfJokes = maxFavorites(parsedJokes);
 
-    setFavoriteJokes(maxNumberOfJokes);
+    setFavorites(maxNumberOfJokes);
 
     if (maxNumberOfJokes.length !== parsedJokes.length) {
       localStorage.setItem("favoriteJokes", JSON.stringify(maxNumberOfJokes));
@@ -34,14 +34,25 @@ export default function Favorites() {
   }, []);
 
   const deleteFromFavorites = (favorite: Joke): void => {
-    setFavoriteJokes((previousJokes: Array<Joke>) => {
-      const updated = previousJokes.filter(
+    setFavorites((jokes: Array<Joke>) => {
+      const filteredJokes = jokes.filter(
         (joke: Joke) => joke.id !== favorite.id
       );
-      localStorage.setItem("favoriteJokes", JSON.stringify(updated));
-      return updated;
+      localStorage.setItem("favoriteJokes", JSON.stringify(filteredJokes));
+      return filteredJokes;
     });
   };
+
+  if (favorites.length === 0) {
+    return (
+      <div className="favorites">
+        <button className="button" onClick={clearAll}>
+          {t("clearAll")}
+        </button>
+        <p>{t("noData")}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="favorites">
@@ -49,18 +60,10 @@ export default function Favorites() {
         {t("clearAll")}
       </button>
 
-      <div>
-        {favoritesJokes.length > 0 && (
-          <div className="grid">
-            {favoritesJokes.map((favoriteJoke: Joke) => (
-              <JokeItem
-                key={favoriteJoke.id}
-                joke={favoriteJoke}
-                onDelete={deleteFromFavorites}
-              />
-            ))}
-          </div>
-        )}
+      <div className="grid">
+        {favorites.map((joke: Joke) => (
+          <JokeItem key={joke.id} joke={joke} onDelete={deleteFromFavorites} />
+        ))}
       </div>
     </div>
   );

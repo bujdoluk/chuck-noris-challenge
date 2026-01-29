@@ -14,7 +14,10 @@ export default function Home() {
   const [jokes, setJokes] = useState<Array<Joke>>([]);
   const [loadingJoke, setLoading] = useState<boolean>(false);
   const [loadingNewJoke, setNewLoading] = useState<boolean>(false);
-  const [favoriteJokes, setFavoriteJokes] = useState<Array<Joke>>([]);
+  const [favorites, setFavorites] = useState<Array<Joke>>(() => {
+    const favorites = localStorage.getItem("favoriteJokes");
+    return favorites ? JSON.parse(favorites) : [];
+  });
 
   const timeoutRef = useRef<number | null>(null);
   const intervalRef = useRef<number | null>(null);
@@ -29,7 +32,7 @@ export default function Home() {
     }
   };
 
-  const onFetchJoke = (): void => {
+  const fetchOneJoke = (): void => {
     if (intervalRef.current) {
       return;
     }
@@ -48,7 +51,7 @@ export default function Home() {
     }, CONSTANTS.DEBOUNCE);
   };
 
-  const onFetchNewJoke = async (): Promise<void> => {
+  const generateNewJoke = async (): Promise<void> => {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -72,56 +75,39 @@ export default function Home() {
   };
 
   const addToFavorites = (favorite: Joke): void => {
-    setFavoriteJokes((previousJokes: Array<Joke>) => {
-      const favorites = localStorage.getItem("favoriteJokes");
-      const savedFavorites: Array<Joke> = favorites
-        ? JSON.parse(favorites)
-        : previousJokes;
+    setFavorites((previousJoke) => {
+      if (previousJoke.some((joke) => joke.id === favorite.id))
+        return previousJoke;
 
-      if (savedFavorites.find((joke: Joke) => joke.id === favorite.id))
-        return savedFavorites;
-
-      const maxNumberOfJokes = [...savedFavorites, favorite].slice(
-        -CONSTANTS.MAX_FAVORITES_JOKES
-      );
-      localStorage.setItem("favoriteJokes", JSON.stringify(maxNumberOfJokes));
-
-      return maxNumberOfJokes;
+      return [...previousJoke, favorite].slice(-CONSTANTS.MAX_FAVORITES_JOKES);
     });
   };
 
   const removeFromFavorites = (favorite: Joke): void => {
-    setFavoriteJokes((previousJokes: Array<Joke>) => {
-      const favorites = localStorage.getItem("favoriteJokes");
-      const savedFavorites: Array<Joke> = favorites
-        ? JSON.parse(favorites)
-        : previousJokes;
-
-      const filteredJokes = savedFavorites.filter(
-        (joke) => joke.id !== favorite.id
-      );
-      localStorage.setItem("favoriteJokes", JSON.stringify(filteredJokes));
-      return filteredJokes;
-    });
+    setFavorites((previousJoke) =>
+      previousJoke.filter((joke) => joke.id !== favorite.id)
+    );
   };
 
   useEffect(() => {
-    const onKeyboardEvent = (event: KeyboardEvent): void => {
+    localStorage.setItem("favoriteJokes", JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key.toLowerCase() === "r") {
-        onFetchJoke();
+        fetchOneJoke();
       }
     };
 
-    window.addEventListener("keydown", onKeyboardEvent);
+    window.addEventListener("keydown", onKeyDown);
 
-    return () => {
-      window.removeEventListener("keydown", onKeyboardEvent);
-    };
-  }, []);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [fetchOneJoke]);
 
   return (
     <div className="home">
-      <button className="button" onClick={onFetchJoke} disabled={loadingJoke}>
+      <button className="button" onClick={fetchOneJoke} disabled={loadingJoke}>
         {loadingJoke ? "Loading..." : "Get One Joke"}
       </button>
 
@@ -129,19 +115,15 @@ export default function Home() {
         <div className="grid">
           <JokeItem
             joke={joke}
-            favorites={favoriteJokes}
+            favorites={favorites}
             onAdd={addToFavorites}
             onRemove={removeFromFavorites}
           />
         </div>
       )}
 
-      <button
-        className="button"
-        onClick={onFetchNewJoke}
-        disabled={loadingNewJoke && !intervalRef.current}
-      >
-        {intervalRef.current ? t("stop") : t("getJokeEveryTreeSeconds")}
+      <button className="button" onClick={generateNewJoke}>
+        {loadingNewJoke ? t("stop") : t("getJokeEveryTreeSeconds")}
       </button>
 
       {jokes.length > 0 && (
@@ -150,7 +132,7 @@ export default function Home() {
             <JokeItem
               key={joke.id}
               joke={joke}
-              favorites={favoriteJokes}
+              favorites={favorites}
               onAdd={addToFavorites}
               onRemove={removeFromFavorites}
             />

@@ -5,14 +5,14 @@
   background-color: #c4c4c4;
   width: 100vw;
   min-height: 100vh;
-  padding: 49px 39px;
+  padding: 50px 40px;
 }
 
 .favorites {
   background-color: #c4c4c4;
   width: 100vw;
   min-height: 100vh;
-  padding: 49px 39px;
+  padding: 50px 40px;
 }
 
 .grid {
@@ -51,7 +51,7 @@
   text-decoration: underline;
 }
 
-.joke__add {
+.joke__button {
   cursor: pointer;
   min-width: 170px;
   width: 170px;

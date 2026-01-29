@@ -19,10 +19,12 @@ const JokeItem: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
 
-  const isAdded = favorites.find((favorite: Joke) => favorite.id === joke.id);
+  const isAddedToFavorites = favorites.some(
+    (favorite: Joke) => favorite.id === joke.id
+  );
 
   const toggleFavorite = (): void => {
-    if (isAdded) {
+    if (isAddedToFavorites) {
       onRemove?.(joke);
     } else {
       onAdd?.(joke);
@@ -48,13 +50,13 @@ const JokeItem: React.FC<Props> = ({
       <div className="joke__value">{joke.value}</div>
 
       {onAdd && (
-        <button className="joke__add" onClick={toggleFavorite}>
-          {isAdded ? t("removeFromFavorites") : t("addToFavorites")}
+        <button className="joke__button" onClick={toggleFavorite}>
+          {isAddedToFavorites ? t("removeFromFavorites") : t("addToFavorites")}
         </button>
       )}
 
       {onDelete && (
-        <button className="joke__add" onClick={deleteJoke}>
+        <button className="joke__button" onClick={deleteJoke}>
           {t("deleteFromFavorites")}
         </button>
       )}
