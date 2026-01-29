@@ -10,13 +10,13 @@ interface Props {
   onDelete?: (joke: Joke) => void;
 }
 
-const JokeItem: React.FC<Props> = ({
+const JokeItem = ({
   joke,
   favorites = [],
   onAdd,
   onRemove,
   onDelete,
-}) => {
+}: Props) => {
   const { t } = useTranslation();
 
   const isAddedToFavorites = favorites.some(
