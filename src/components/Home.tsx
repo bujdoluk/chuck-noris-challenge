@@ -64,28 +64,28 @@ export default function Home() {
     intervalRef.current = window.setInterval(async (): Promise<void> => {
       const newJoke = await fetchJoke();
       if (newJoke) {
-        setJokes((previousJokes: Array<Joke>) => [...previousJokes, newJoke]);
+        setJokes((jokes: Array<Joke>) => [...jokes, newJoke]);
       }
     }, CONSTANTS.REFRESH_INTERVAL);
 
     const firstJoke = await fetchJoke();
     if (firstJoke) {
-      setJokes((previousJokes: Array<Joke>) => [...previousJokes, firstJoke]);
+      setJokes((jokes: Array<Joke>) => [...jokes, firstJoke]);
     }
   };
 
-  const addToFavorites = (favorite: Joke): void => {
-    setFavorites((previousJoke) => {
-      if (previousJoke.some((joke) => joke.id === favorite.id))
-        return previousJoke;
+  const addToFavorites = (joke: Joke): void => {
+    setFavorites((favorites) => {
+      if (favorites.some((favorite) => favorite.id === joke.id))
+        return favorites;
 
-      return [...previousJoke, favorite].slice(-CONSTANTS.MAX_FAVORITES_JOKES);
+      return [...favorites, joke].slice(-CONSTANTS.MAX_FAVORITES_JOKES);
     });
   };
 
-  const removeFromFavorites = (favorite: Joke): void => {
-    setFavorites((previousJoke) =>
-      previousJoke.filter((joke) => joke.id !== favorite.id)
+  const removeFromFavorites = (joke: Joke): void => {
+    setFavorites((favorites) =>
+      favorites.filter((favorite) => favorite.id !== joke.id)
     );
   };
 

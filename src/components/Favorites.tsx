@@ -7,41 +7,23 @@ import { CONSTANTS } from "../utils/constants.ts";
 export default function Favorites() {
   const { t } = useTranslation();
 
-  const [favorites, setFavorites] = useState<Array<Joke>>([]);
+  const [favorites, setFavorites] = useState<Array<Joke>>(() => {
+    const favorites = localStorage.getItem("favoriteJokes");
+    if (!favorites) return [];
+    const parsedFavorites: Array<Joke> = JSON.parse(favorites);
+    return parsedFavorites.slice(-CONSTANTS.MAX_FAVORITES_JOKES);
+  });
 
-  const clearAll = (): void => {
-    setFavorites([]);
-    localStorage.removeItem("favoriteJokes");
-  };
-
-  const maxFavorites = (jokes: Array<Joke>): Array<Joke> => {
-    if (jokes.length <= CONSTANTS.MAX_FAVORITES_JOKES) return jokes;
-    return jokes.slice(jokes.length - CONSTANTS.MAX_FAVORITES_JOKES);
-  };
+  const clearAll = (): void => setFavorites([]);
 
   useEffect((): void => {
-    const favorites = localStorage.getItem("favoriteJokes");
-    if (!favorites) return;
+    localStorage.setItem("favoriteJokes", JSON.stringify(favorites));
+  }, [favorites]);
 
-    const parsedJokes: Array<Joke> = JSON.parse(favorites);
-    const maxNumberOfJokes = maxFavorites(parsedJokes);
-
-    setFavorites(maxNumberOfJokes);
-
-    if (maxNumberOfJokes.length !== parsedJokes.length) {
-      localStorage.setItem("favoriteJokes", JSON.stringify(maxNumberOfJokes));
-    }
-  }, []);
-
-  const deleteFromFavorites = (favorite: Joke): void => {
-    setFavorites((jokes: Array<Joke>) => {
-      const filteredJokes = jokes.filter(
-        (joke: Joke) => joke.id !== favorite.id
-      );
-      localStorage.setItem("favoriteJokes", JSON.stringify(filteredJokes));
-      return filteredJokes;
-    });
-  };
+  const deleteFromFavorites = (joke: Joke): void =>
+    setFavorites((favorites) =>
+      favorites.filter((favorite: Joke) => favorite.id !== joke.id)
+    );
 
   if (favorites.length === 0) {
     return (
@@ -61,8 +43,12 @@ export default function Favorites() {
       </button>
 
       <div className="grid">
-        {favorites.map((joke: Joke) => (
-          <JokeItem key={joke.id} joke={joke} onDelete={deleteFromFavorites} />
+        {favorites.map((favorite: Joke) => (
+          <JokeItem
+            key={favorite.id}
+            joke={favorite}
+            onDelete={deleteFromFavorites}
+          />
         ))}
       </div>
     </div>
