@@ -1,7 +1,7 @@
 {
-  "name": "react",
+  "name": "chuck-noris-challenge",
   "version": "1.0.0",
-  "description": "React example starter project",
+  "description": "Chuck Norris Chanllenge task",
   "keywords": [
     "react",
     "starter"
