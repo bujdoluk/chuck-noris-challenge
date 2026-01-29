@@ -33,10 +33,6 @@ export default function Home() {
   };
 
   const fetchOneJoke = (): void => {
-    if (intervalRef.current) {
-      return;
-    }
-
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
